@@ -7,45 +7,62 @@ import java.util.Iterator;
 
 import javafx.application.Platform;
 
-//this class includes some helper methods to manage users and
-//	sendMsg method which sends messages toward DataOutputStream to Clients
-//
+// Clase con la cual manejaremos a los usuarios, sus mensajes y demás.
+// Es una clase importante y sencilla si se entiende bien.
+
 public class Usuario {
-	//String : User name, DataOutputStream <-- socket.getOutputStream()
-	//	When addCLient() is called, 
-	//	a user will be put into this HashMap with its own DataOutputStream
+	//Cuando el método de añadir usuario ha sido llamado, se añade al HashMap junto con su DataInputStream
 	HashMap<String, DataOutputStream> clientmap = new HashMap<String, DataOutputStream>();
 
-	String str; //this is to update ChatServer.logs
+	String str; // Solo la utilizaremos para actualizar los registros. (Logs).
 	
-	public synchronized void AddClient(String name, Socket socket) {
+	// Método añadir nuevo usuario, junto con su id que será el nombre y el socket, para la comunicación.
+	// Se utiliza synchronized para que los hilos vayan en orden y no vayan "a su bola".
+	public synchronized void anadirUsuario(String name, Socket socket) {
 		try {
+			// Insertamos el nuevo usuario
 			clientmap.put(name, new DataOutputStream(socket.getOutputStream()));
-			sendMsg(name + " ha entrado.", "Servidor");
+			// Enviamos un mensaje contruido manualmente, para indicar en el chat que se ha
+			// unido un nuevo usuario al chat actual.
+			enviarMensaje(name + " ha entrado.", "Servidor");
+			// Excepciones en el caso que las hubiera, acompañado de mensajes.
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println("Ocurre un error al añadir un nuevo usuario al chat.");
+			e.printStackTrace();
 		}
 
 	}
 
-	public synchronized void RemoveClient(String name) {
+	// Ya sea porque se ha salido o por un error, contamos con el método eliminar cliente
+	// Con método synchronized para llevar un orden.
+	public synchronized void eliminarUsuario(String name) {
 		try {
+			// Removemos el cliente del HashMap.
 			clientmap.remove(name);
-			sendMsg(name + " ha salido.", "Servidor");
+			// Llamamos al método enviar mensaje, y enviamos un mensaje de salida, esta vez
+			// construido manualmente por nosotros.
+			enviarMensaje(name + " ha salido.", "Servidor");
+			// Excepción en el caso que hubiera.
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println("Ocurre un error al eliminar el usuario del chat.");
+			e.printStackTrace();
 		}
 	}
 
-	public synchronized void sendMsg(String msg, String name) throws Exception {
-		// server-side: update log
-		str = name + " : " + msg;
+	// Método para enviar un mensake, acompañado del mensaje y el nombre
+	// Se utiliza, de nuevo, el método synchronized para llevar un orden y que no haya un descontrol.
+	public synchronized void enviarMensaje(String mensaje, String nombreUsuario) throws Exception {
+		// Creamos la "estructura" del mensaje enviado, queda así: Alejandro: Hola que tal!
+		str = nombreUsuario + " : " + mensaje;
 		
-		// client-side: send stream to clients
+		// Enviamos el mensaje a los demás clientes, de lo contrario nadie recibiría nada
 		Iterator iterator = clientmap.keySet().iterator();
+		// Mientras haya un siguiente registro, se continúa.
 		while (iterator.hasNext()) {
+			// Creamos una variable de tipo String.
 			String clientname = (String) iterator.next();
-			clientmap.get(clientname).writeUTF(name + ": " + msg); // client-side
+			// Escribimos en el HashMap el mensaje para registrarlo y enviar.
+			clientmap.get(clientname).writeUTF(nombreUsuario + ": " + mensaje); // Estructura del mensaje, igual que anteriormente.
 		}
 	}
 }
