@@ -28,12 +28,12 @@ public class Cliente extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		// scene1: enter name first
+		// Escena 1, donde se pide el nombre de usuario.
 		GridPane root1 = new GridPane();
 		root1.setPrefSize(400, 200);
-		root1.setPadding(new Insets(0, 20, 20, 20)); // add 10px padding
-		root1.setVgap(15); // set vertical gap
-		root1.setHgap(5); // set horizontal gap
+		root1.setPadding(new Insets(0, 20, 20, 20));
+		root1.setVgap(15);
+		root1.setHgap(5);
 		root1.setAlignment(Pos.CENTER);
 		root1.add(new Label("Introduce tu nombre: "), 0, 0);
 		root1.add(introducirNickName, 0, 1);
@@ -46,14 +46,16 @@ public class Cliente extends Application {
 
 		ConectarServidor connectServer = new ConectarServidor();
 
-		// scene1 -- submitName Button
+		// Acciones a realizar si se ha pulsado en boton de entrar
 		botonEntrar.setOnAction(e -> {
-			// getText
+			// Obtenemos el nombre desde la casilla.
 			nombre = introducirNickName.getText();
+			// Iniciamos un hilo para conectar al servidor
 			Thread connectServerThread = new Thread(connectServer);
 			connectServerThread.start();
 
-			// Switch to scene2: after submitName button clicked
+			// Cambiamos a la escena 2, donde ya estamos en la ventana
+			// de chat para conversar.
 			ScrollPane layout = new ScrollPane();
 			layout.setPrefSize(400, 600);
 			layout.setContent(logs);
