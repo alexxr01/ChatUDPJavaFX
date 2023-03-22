@@ -8,25 +8,27 @@ import java.net.Socket;
 import javafx.application.Platform;
 
 public class ConectarServidor implements Runnable {
-	Socket socket = null; // To open communication
-	DataInputStream in = null; // To read data from Server
-	DataOutputStream out = null; // To send data to Server
+	Socket socket = null; // Necesario para abrir una comunicación.
+	DataInputStream in = null; // Necesario para leer los datos del servidor.
+	DataOutputStream out = null; // Para enviar los datos al servidor
 
 	public DataOutputStream getDataOuputStream() {
 		return out;
 	}
 
+	// Todas las acciones serán realizadas por el servidor
 	@Override
 	public void run() {
 
 		try {
-			socket = new Socket("localhost", 8080);
+			// En primer lugar, se conectará al servidor mediante la IP localhost y el puerto 3000
+			socket = new Socket("localhost", 3000);
 
 			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());
 
-			out.writeUTF(Cliente.name); // send 'name' to Server
-			System.out.println(Cliente.name + " ha entrado al chat.");
+			out.writeUTF(Cliente.nombre); // send 'name' to Server
+			System.out.println(Cliente.nombre + " ha entrado al chat.");
 
 		} catch (IOException e) {
 		}

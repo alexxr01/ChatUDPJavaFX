@@ -6,9 +6,10 @@ public class ChatServer {
 		/*
 		 * AQUÍ SE INICIA EL SERVIDOR.
 		 */
-		Thread startServer = new Thread(new IniciarServidor());
-		startServer.start();
-		System.out.println("El servidor ha iniciado.");
+		Thread servidor = new Thread(new IniciarServidor());
+		servidor.start(); // Lo iniciamos
+		// Mostramos un mensaje
+		System.out.println("El servidor ha iniciado, nombre=[" + servidor.getName() + "]");
 		
 	}
 

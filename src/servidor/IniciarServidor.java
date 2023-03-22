@@ -7,27 +7,25 @@ import java.util.Date;
 
 import javafx.application.Platform;
 
-// This is to start a server up to 10 threads.
-//
+// Aquí es donde se inicia el servidor, con un máximo de 10 threads, es decir 10 cliente máximos
 public class IniciarServidor implements Runnable {
-	Socket socket = null; // To communicate with the client who has accessed Server
-	Usuario user = new Usuario(); // To manage users who is in the chat room
-	ServerSocket server_socket = null; // To accept a client
+	Socket socket = null; // Para comunicar que cliente ha accedido al servidor.
+	Usuario user = new Usuario(); // Para manejar los usuarios que hay en el servidor conectados.
+	ServerSocket server_socket = null; // Se usará para aceptar un cliente
+	// Se crea una instanacia de Thread.
+	Thread hilo = new Thread();
 
-	int count = 0;
-	Thread thread[] = new Thread[10];
-	// this server is designed to accept up to 10 connections from the clients.
-
+	// Acción a realizar por el hilo.
 	@Override
 	public void run() {
 		try {
-			server_socket = new ServerSocket(8080);
+			// Instancia donde crearemos el servidor y el puerto.
+			server_socket = new ServerSocket(3000);
 			while (true) {
-				socket = server_socket.accept(); // wait for the request from clients			
-
-				thread[count] = new Thread(new ServicioChat(user, socket));
-				thread[count].start();
-				count++;
+				socket = server_socket.accept(); // Esperamos las conexiones y las aceptamos			
+				// Creamos un nuevo hilo, de la clase "ServicioChat" asignandole el usuario y el socket.
+				hilo = new Thread(new ServicioChat(user, socket));
+				hilo.start(); // Lo iniciamos.
 			}
 		} catch (Exception e) {
 			System.out.println(e);
